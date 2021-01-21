@@ -1,13 +1,4 @@
 rm(list=ls())
-#' 346 samples AB and nAB
-
-dir.create('./figures/joint/231220/',showWarnings = FALSE)
-# roche.data <- read.csv(
-#   './data/131220/roche-data-131220.csv',
-#   stringsAsFactors = FALSE
-# )
-# colnames(roche.data)[3:4] <- c('baseline','month3')
-
 roche.data <- read.csv(
   './data/231220/antibody-3-months-251220.csv',
   stringsAsFactors = FALSE
