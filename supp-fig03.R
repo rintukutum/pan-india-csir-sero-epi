@@ -1,5 +1,4 @@
 rm(list=ls())
-
 symptom <- read.csv(
   './data/231220/symptoms.csv',
   stringsAsFactors = FALSE

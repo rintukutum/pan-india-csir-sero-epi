@@ -92,3 +92,96 @@ dev.off()
 #-----------------
 # 6 months data
 rm(list=ls())
+dyn.data <- read.csv(
+  './data/221220/6-months-data.csv',
+  stringsAsFactors = FALSE
+)
+getThresholdCode <- function(x,var=c(2,3)){
+  x.var <- x[,var]
+  names(x.var) <- x$time
+  j <- 1
+  out <- c()
+  for(i in 2:length(x.var)){
+    x10 <- (x.var[i-1]*5)/100
+    neutral <- TRUE
+    if((x.var[i-1] + x10) < x.var[i]){
+      out[j] <- 'Increase'
+      neutral <- FALSE
+    }
+    if((x.var[i-1] - x10) > x.var[i]){
+      out[j] <- 'Decrease'
+      neutral <- FALSE
+    }
+    if(neutral){
+      out[j] <- 'Same\n(+/-5%)'
+    }
+    j <- j + 1
+  }
+  # out <- c()
+  # j <- 1
+  # for(i in 2:length(x.var)){
+  #   out[j] <- x.var[i] - x.var[i-1]
+  #   j <- j +1
+  # }
+  # out <- paste(ifelse(out>0,'I','D'),collapse = ':')
+  if(nrow(x) == 3){
+    df_ <- rbind(x,x[2,])
+    df_$path <- paste0(unique(df_$Sample.IDs),':','P',rep(c(1:2),each=2))
+    df_$trend <- rep(out,each=2)
+  }else{
+    df_ <- x
+    df_$path <- paste0(unique(df_$Sample.IDs),':','P1')
+    df_$trend <- rep(out,each=2)
+  }
+  return(df_)
+}
+dyn.data.ab <- plyr::ddply(dyn.data,'Sample.IDs',function(x){getThresholdCode(x,2)})
+dyn.data.nab <- plyr::ddply(dyn.data,'Sample.IDs',function(x){getThresholdCode(x,3)})
+
+library(ggplot2)
+library(ggpubr)
+# getPaths <- function(x){
+#   if(nrow(x) == 3){
+#     df_ <- rbind(x,x[2,])
+#     df_$path <- paste0(unique(df_$Sample.IDs),':','P',rep(c(1:2),each=2))
+#   }else{
+#     df_ <- x
+#     df_$path <- paste0(unique(df_$Sample.IDs),':','P1')
+#   }
+#   return(df_)
+# }
+# line.dat <- plyr::ddply(dyn.data,'Sample.IDs',getPaths)
+
+p.ab <- ggplot(
+  dyn.data.ab,
+  aes(x=Roche.values,y=time,group=path)
+) +
+  geom_line(aes(col=trend),size=0.8) +
+  geom_point(shape=21,col='black',fill='grey95',size=4) +
+  coord_flip() +
+  scale_y_discrete(limit=c('baseline','3 months','6 months'),
+                   label = c('Baseline',' 3 Months','6 Months')) +
+  scale_color_discrete(name='') +
+  theme_pubr() +
+  xlab('Antibody') +
+  ylab('')
+
+p.nab <- ggplot(
+  dyn.data.nab,
+  aes(x=Inhibition.,y=time,group=path)
+) +
+  geom_line(aes(col=trend),size=0.8) +
+  geom_point(shape=21,col='black',fill='grey95',size=4) +
+  coord_flip() +
+  scale_y_discrete(limit=c('baseline','3 months','6 months'),
+                   label = c('Baseline',' 3 Months','6 Months')) +
+  scale_color_discrete(name='') +
+  theme_pubr() +
+  xlab('Neutralizing antibody') +
+  ylab('')
+
+library(gridExtra)
+# NEED TO UPDATE THE FIGURE 4AB WITH DELETED VERSION
+pdf('./figures/joint/261220/Figure-04-CD.pdf',width = 10,height = 4.5)
+gridExtra::grid.arrange(p.ab,p.nab,nrow=1)
+dev.off()
