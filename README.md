@@ -10,4 +10,4 @@ install.packages(
 ```
 
 ## Additional information:
-Dataset is not included in the repository. Please contact corresponding author for the dataset. Only the model and figue codes are available in the repository. 
+Dataset is not included in the repository. Please contact corresponding authors (shantanus@igib.res.in; dash@igib.in) for the dataset. Only the model and figue codes are available in the repository. 
