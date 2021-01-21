@@ -252,3 +252,155 @@ bothG.mods.summary <- both.mods.summary
 save(bothG.mods.summary,bothG.plots,bothG.OR,
      file = './data/H-bothG.summary.RData')
 
+#------------ FIGURE
+rm(list=ls())
+source('./func-room-final.R')
+load('./data/F-bothG.summary.RData')
+bothG.OR$group <- 'Complete'
+load('./data/H-female.summary.RData')
+f.OR$group <- 'Female'
+load('./data/H-male.summary.RData')
+m.OR$group <- 'Male'
+OR <- rbind(bothG.OR,
+            f.OR,
+            m.OR)
+OR$group <- factor(OR$group,levels = c('Complete','Male','Female'))
+load('./data/261220/H-OR-all-ind.RData')
+
+write.csv(OR.all.ind,
+          row.names = FALSE,
+          file = './data/261220/H-00-Odd-ratio-full-data-ind-261220.csv')
+OR.all.ind$model = 'full'
+OR <- rbind(OR,
+            OR.all.ind[,colnames(OR)])
+OR$group <- factor(OR$group,levels = rev(levels(OR$group)))
+p.OR.v2 <- ggplot(aes(x = OR, xmin = min.conf, xmax = max.conf, y = var,
+                      group = model,color= model),
+                  data = OR) +
+  geom_vline(xintercept = 1, color = 'grey50', linetype = 'dashed') +
+  geom_errorbarh(height = 0.25, position = position_dodge(width = 0.55)) +
+  geom_point(size = 2, position = position_dodge(width = 0.55)) +
+  facet_grid(facets = group~.) +
+  xlab('Odds ratio (95% CI)') +
+  scale_y_discrete(limit=c('GenderMale',
+                           "OccupationOS",
+                           "ModeTransportPublic",
+                           "SmokingNo",
+                           "DietNV"),
+                   labels= rev(c('Diet (nv)','Smoking (no)','Transport (public)',
+                                 'Occupation (os)','Gender (male)'))) +
+  ylab('') + theme_pubr()
+
+
+pdf('./figures/joint/261220/Figure-03-A.pdf',width = 3.65,height = 5.5)
+p.OR.v2
+dev.off()
+# Figure 03 B
+
+bothG.mods.summary$pval <- -log10(bothG.mods.summary$pval)
+m.both <- reshape::melt(bothG.mods.summary[,c(1,2,5,6,7)])
+m.both$variable <- factor(m.both$variable,
+                          levels = c('OR','pval','VIF'))
+
+idx.pval <- as.character(m.both$variable) == 'pval'
+ggplot(m.both[idx.pval,],
+       aes(x=var,y=value)) +
+  geom_boxplot(col='#00bfc4ff',fill='grey95',outlier.color = 'grey50') +
+  geom_hline(yintercept = 1.3,color='red',linetype='dashed') +
+  theme_pubr()
+p1 <- ggplot(m.both,
+             aes(x=var,y=value)) +
+  geom_boxplot(col='#00bfc4ff',fill='grey95',outlier.color = 'grey50') +
+  #xlab('Variable') +
+  xlab('') +
+  facet_wrap(facets = 'variable',scales = 'free_y') +
+  scale_x_discrete(
+    limit=rev(c('GenderMale',
+                "OccupationOS",
+                "ModeTransportPublic",
+                "SmokingNo",
+                "DietNV")),
+    labels= c('Diet (nv)',
+              'Smoking (no)',
+              'Transport (public)',
+              'Occupation (os)',
+              'Gender (male)')
+  ) +
+  theme_pubr() +
+  theme(
+    axis.text.x = element_text(
+      angle=60,vjust = 1,hjust = 1),
+    strip.background = element_blank(),
+    strip.text = element_blank()
+  )
+
+male.mods.summary$pval <- -log10(male.mods.summary$pval)
+m.m <- reshape::melt(male.mods.summary[,c(1,2,5,6,7)])
+m.m$variable <- factor(
+  m.m$variable,
+  levels = c('OR','pval','VIF')
+)
+idx.pval <- as.character(m.m$variable) == 'pval'
+ggplot(m.m[idx.pval,],
+       aes(x=var,y=value)) +
+  geom_boxplot(col='#00bfc4ff',fill='grey95',outlier.color = 'grey50') +
+  geom_hline(yintercept = 1.3,color='red',linetype='dashed') +
+  theme_pubr()
+
+p2 <- ggplot(m.m,
+             aes(x=var,y=value)) +
+  geom_boxplot(col='#00bfc4ff',
+               fill='grey95',
+               outlier.colour = 'grey50'
+  ) +
+  xlab('') +
+  facet_wrap(facets = 'variable',scales = 'free_y') +
+  scale_x_discrete(limit=rev(c('GenderMale',
+                               "OccupationOS",
+                               "ModeTransportPublic",
+                               "SmokingNo",
+                               "DietNV")),
+                   labels= c('','','',
+                             '','')) +
+  theme_pubr() +
+  theme(axis.text.x = element_text(angle=60,vjust = 1,hjust = 1),
+        strip.background = element_blank(),strip.text = element_blank())
+
+
+
+female.mods.summary$pval <- -log10(female.mods.summary$pval)
+m.f <- reshape::melt(female.mods.summary[,c(1,2,5,6,7)])
+m.f$variable <- factor(m.f$variable,
+                       levels = c('OR','pval','VIF'))
+idx.pval <- as.character(m.f$variable) == 'pval'
+ggplot(m.f[idx.pval,],
+       aes(x=var,y=value)) +
+  geom_boxplot(col='#00bfc4ff',fill='grey95',outlier.color = 'grey50') +
+  geom_hline(yintercept = 1.3,color='red',linetype='dashed') +
+  theme_pubr()
+
+p3 <- ggplot(m.f,
+             aes(x=var,y=value)) +
+  geom_boxplot(col='#00bfc4ff',fill='grey95',outlier.colour = 'grey50') +
+  xlab('') +
+  facet_wrap(facets = 'variable',scales = 'free_y') +
+  scale_x_discrete(limit=rev(c('GenderMale',
+                               "OccupationOS",
+                               "ModeTransportPublic",
+                               "SmokingNo",
+                               "DietNV")),
+                   # labels= c('Diet (nv)','Smoking (no)','Transport (public)',
+                   #           'Occupation (os)','Gender (male)'))
+                   labels= c('','','',
+                             '',''))+
+  theme_pubr() +
+  theme(axis.text.x = element_text(angle=60,vjust = 1,hjust = 1))
+pdf('./figures/joint/261220/Figure-03-B.pdf',width = 4.5,height = 6)
+gridExtra::grid.arrange(
+  p3,p2,p1,nrow=3,heights=c(0.2875+0.015, 0.2875-0.015, 0.425))
+dev.off()
+
+pdf('./figures/joint/261220/Figure-03-A.pdf',width = 3.45,height = 5.5)
+p.OR.v2
+dev.off()
+
