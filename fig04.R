@@ -39,11 +39,6 @@ ggplot(roche.data,
   theme_pubr()
 dev.off()
 
-# inhibition.data <- read.csv(
-#   './data/131220/neutralisation-data-131220.csv',
-#   stringsAsFactors = FALSE
-# )
-# colnames(inhibition.data)[3:4] <- c('baseline','month3')
 
 inhibition.data <- read.csv(
   './data/231220/antibody-neutra-251220.csv',
@@ -52,7 +47,7 @@ inhibition.data <- read.csv(
 colnames(inhibition.data)[2:3] <- c('baseline','month3')
 
 inhibition.data$month3[inhibition.data$month3 < 0] <- 0
-# [1] -4.934597 -9.121037
+
 inhibition.data$delta <- inhibition.data$month3 - inhibition.data$baseline
 
 
@@ -108,13 +103,7 @@ getThresholdCode <- function(x,var=c(2,3)){
     }
     j <- j + 1
   }
-  # out <- c()
-  # j <- 1
-  # for(i in 2:length(x.var)){
-  #   out[j] <- x.var[i] - x.var[i-1]
-  #   j <- j +1
-  # }
-  # out <- paste(ifelse(out>0,'I','D'),collapse = ':')
+  
   if(nrow(x) == 3){
     df_ <- rbind(x,x[2,])
     df_$path <- paste0(unique(df_$Sample.IDs),':','P',rep(c(1:2),each=2))
@@ -131,17 +120,6 @@ dyn.data.nab <- plyr::ddply(dyn.data,'Sample.IDs',function(x){getThresholdCode(x
 
 library(ggplot2)
 library(ggpubr)
-# getPaths <- function(x){
-#   if(nrow(x) == 3){
-#     df_ <- rbind(x,x[2,])
-#     df_$path <- paste0(unique(df_$Sample.IDs),':','P',rep(c(1:2),each=2))
-#   }else{
-#     df_ <- x
-#     df_$path <- paste0(unique(df_$Sample.IDs),':','P1')
-#   }
-#   return(df_)
-# }
-# line.dat <- plyr::ddply(dyn.data,'Sample.IDs',getPaths)
 
 p.ab <- ggplot(
   dyn.data.ab,
@@ -172,7 +150,6 @@ p.nab <- ggplot(
   ylab('')
 
 library(gridExtra)
-# NEED TO UPDATE THE FIGURE 4AB WITH DELETED VERSION
 pdf('./figures/joint/261220/Figure-04-CD.pdf',width = 10,height = 4.5)
 gridExtra::grid.arrange(p.ab,p.nab,nrow=1)
 dev.off()

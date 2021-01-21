@@ -1,3 +1,4 @@
+#------------ MODEL
 rm(list=ls())
 combine.data <- read.csv(
   './data/261220/merged-data-261220.csv',
