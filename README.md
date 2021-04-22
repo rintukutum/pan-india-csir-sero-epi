@@ -1,5 +1,5 @@
 # pan-india-csir-sero-epi
-
+[Insights from a Pan India Sero-Epidemiological survey (Phenome-India Cohort) for SARS-CoV2](https://elifesciences.org/articles/66537)
 ## Required packages:
 ```{R}
 install.packages(
@@ -10,4 +10,6 @@ install.packages(
 ```
 
 ## Additional information:
-Dataset is not included in the repository. Please contact corresponding authors (shantanus@igib.res.in; ddash@igib.in) for the dataset. Only the model and figue codes are available in the repository. 
+Dataset is not included in the repository. Please contact corresponding authors (shantanus@igib.res.in; ddash@igib.in) for the dataset. Only the model and figue codes are available in this repository.
+
+##  
